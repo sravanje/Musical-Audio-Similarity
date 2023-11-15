@@ -1,36 +1,75 @@
 """
 Generate Chromagrams of MusicNet custom tracks and save as png
+
 - Dhawal Modi & Sravan Jayati
 """
 
 import os
 import matplotlib.pyplot as plt
 import librosa.display
+import argparse
+from tqdm import tqdm
 
-folder_path = '../musicnet/custom_generated_musicnet/'
-output_path = '../Musical-Audio-Similarity/chromagrams'
-
-for filename in os.listdir(folder_path):
-    if filename.endswith('.wav'):
-        file_path = os.path.join(folder_path, filename)
-
-    # Load two audio files
-    y1, sr1 = librosa.load(file_path,sr = None)
+from chromagram import fetch_chromagram
 
 
-    # Compute chromagrams
-    chromagram = librosa.feature.chroma_stft(y=y1, sr=sr1)
+def generate_chromagram(file_path, output_path):
 
+    '''
+    IMP: Need to change this to save chromagrams in numpy or pickle files instead of images
+    '''
 
-    # Display chromagrams
-    plt.figure(figsize=(15, 5))
-    plt.subplot(2, 1, 1)
+    # Fetch chromagram
+    chromagram = fetch_chromagram(file_path)
+
+    plt.figure(figsize=(15, 3))
     librosa.display.specshow(chromagram, y_axis='chroma', x_axis='time')
-    plt.title(f'Chromagram of {filename}')
+    plt.title(f'Chromagram of {os.path.basename(file_path)}')
     plt.colorbar()
-
     plt.tight_layout()
 
-    # Save the plot as a .png file
-    plt.savefig(os.path.join(output_path, f'{filename}_chromagram.png'))
+    # Save the plot as a .png file if output_path is provided, otherwise display chromagram plot
+    if output_path:
+        plt.savefig(os.path.join(output_path, f'{os.path.basename(file_path)}_chromagram.png'))
+    else:
+        plt.show()
+
     plt.close()
+
+
+if __name__=="__main__":
+    
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-f', '--folderorfile', 
+                        default='folder', 
+                        type = str,  
+                        help ='"file" for generating chromagrams for single file; "folder" for generating chromagrams for all files within folder')
+    parser.add_argument('-p', '--path', 
+                        default='../musicnet/custom_generated_musicnet/', 
+                        type = str,  
+                        help ='path to file or folder')
+    parser.add_argument('-op', '--outputpath', 
+                        default='../Musical-Audio-Similarity/chromagrams/', 
+                        type = str,  
+                        help ='path to save chromagrams, use None to only display')
+
+    args = parser.parse_args()
+    path = args.path
+    outputpath = args.outputpath if args.outputpath!='None' else None
+
+    # Processing folder
+    if args.folderorfile=='folder':
+        for filename in tqdm(os.listdir(path)):
+            if not filename.endswith('.wav'):
+                continue
+            file_path = os.path.join(path, filename)
+            generate_chromagram(file_path, outputpath)
+    
+    # Processing file
+    elif args.folderorfile=='file':
+        generate_chromagram(path, outputpath)
+
+    else:
+        raise ValueError('"folderorfile" argument must be either "folder" or "file"')
+
