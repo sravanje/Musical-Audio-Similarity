@@ -7,8 +7,8 @@ import os
 import matplotlib.pyplot as plt
 import librosa.display
 
-folder_path = 'C:/Users/Dave/Documents/EECS257/Project/Signals_project/dataset3/archive/musicnet/custom_generated_musicnet/'
-output_path = 'C:/Users/Dave/Documents/EECS257/Project/Signals_project/Musical-Audio-Similarity/chromagrams'
+folder_path = '../musicnet/custom_generated_musicnet/'
+output_path = '../Musical-Audio-Similarity/chromagrams'
 
 for filename in os.listdir(folder_path):
     if filename.endswith('.wav'):
@@ -30,7 +30,7 @@ for filename in os.listdir(folder_path):
     plt.colorbar()
 
     plt.tight_layout()
-    
+
     # Save the plot as a .png file
     plt.savefig(os.path.join(output_path, f'{filename}_chromagram.png'))
     plt.close()

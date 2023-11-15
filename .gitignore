@@ -1,0 +1,9 @@
+
+*.iml
+.idea/modules.xml
+.idea/misc.xml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/vcs.xml
+__pycache__/midi2mp3.cpython-310.pyc
+spectrogram_analysis.py
+spectrogram_analysis.py
