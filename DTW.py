@@ -57,19 +57,18 @@ def dtw(x, y, table):
 
 def display_dtw_path(D, path):
     plt.imshow(D)
-    plt.plot(path[:,1],path[:,0], 'r', label='computed distance')
-    plt.plot(path[:,1],path[:,1], '-.', label='baseline distance')
+    plt.plot(path[:,1],path[:,0], 'r', label='least cost path')
     plt.legend()
+    plt.title('Cost Matrix using DTW')
     plt.show()
 
-def similarity_score(dtw_path):
+def similarity_score(D, dtw_path):
     '''
-    (summation of distance between each point on dtw_path to line y = x)/(total samples)
-    subject to change
+    (summation of cost values along cost path)/(total samples)
     '''
     sum=0
-    for i in range(len(dtw_path)):
-        sum += np.linalg.norm(np.array(dtw_path[i])- np.array([i,i]))
+    for coordinates in dtw_path:
+        sum += D[coordinates[0],coordinates[1]]
 
     return sum/len(dtw_path)
 
@@ -100,4 +99,4 @@ if __name__=="__main__":
 
     display_dtw_path(D, dtw_path)
 
-    print("similarity score between provided files: ", similarity_score(dtw_path))
+    print("similarity score between provided files: ", similarity_score(D, dtw_path))
