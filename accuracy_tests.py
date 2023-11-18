@@ -35,7 +35,6 @@ for file in tqdm.tqdm(os.listdir(gen_path)):
 file_pairs = np.array(file_pairs)
 
 # save chromagrams
-
 og_files = file_pairs[:, 0]
 for ogf in tqdm.tqdm(og_files):
     # saving 30 seconds chromagrams of all train files with sampling rate 10k
@@ -125,4 +124,4 @@ for i in final_maps:
     closest_match = i[2][:-3]
     accuracy += ground_truth == closest_match
 accuracy = accuracy / len(final_maps)
-accuracy * 100
+print(accuracy * 100)
