@@ -7,3 +7,6 @@
 __pycache__/midi2mp3.cpython-310.pyc
 spectrogram_analysis.py
 spectrogram_analysis.py
+/fmp/
+/chromagrams/
+__pycache__/chromagram.cpython-311.pyc

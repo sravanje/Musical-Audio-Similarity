@@ -14,7 +14,6 @@ from chromagram import fetch_chromagram
 
 
 def generate_chromagram(file_path, output_path):
-
     '''
     IMP: Need to change this to save chromagrams in numpy or pickle files instead of images
     '''
@@ -37,39 +36,38 @@ def generate_chromagram(file_path, output_path):
     plt.close()
 
 
-if __name__=="__main__":
-    
+if __name__ == "__main__":
+
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-f', '--folderorfile', 
-                        default='folder', 
-                        type = str,  
-                        help ='"file" for generating chromagrams for single file; "folder" for generating chromagrams for all files within folder')
-    parser.add_argument('-p', '--path', 
-                        default='../musicnet/custom_generated_musicnet/', 
-                        type = str,  
-                        help ='path to file or folder')
-    parser.add_argument('-op', '--outputpath', 
-                        default='../Musical-Audio-Similarity/chromagrams/', 
-                        type = str,  
-                        help ='path to save chromagrams, use None to only display')
+    parser.add_argument('-f', '--folderorfile',
+                        default='folder',
+                        type=str,
+                        help='"file" for generating chromagrams for single file; "folder" for generating chromagrams for all files within folder')
+    parser.add_argument('-p', '--path',
+                        default='../musicnet/custom_generated_musicnet/',
+                        type=str,
+                        help='path to file or folder')
+    parser.add_argument('-op', '--outputpath',
+                        default='../Musical-Audio-Similarity/chromagrams/',
+                        type=str,
+                        help='path to save chromagrams, use None to only display')
 
     args = parser.parse_args()
     path = args.path
-    outputpath = args.outputpath if args.outputpath!='None' else None
+    outputpath = args.outputpath if args.outputpath != 'None' else None
 
     # Processing folder
-    if args.folderorfile=='folder':
+    if args.folderorfile == 'folder':
         for filename in tqdm(os.listdir(path)):
             if not filename.endswith('.wav'):
                 continue
             file_path = os.path.join(path, filename)
             generate_chromagram(file_path, outputpath)
-    
+
     # Processing file
-    elif args.folderorfile=='file':
+    elif args.folderorfile == 'file':
         generate_chromagram(path, outputpath)
 
     else:
         raise ValueError('"folderorfile" argument must be either "folder" or "file"')
-
