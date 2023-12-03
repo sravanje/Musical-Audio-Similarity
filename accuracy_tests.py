@@ -72,9 +72,13 @@ def method1(chromagram1, chromagram2):
     return score
 
 
-def method2(chromagram1, chromagram2, subsequence=False):
+def method2(chromagram1, chromagram2):
     # librosa dtw with normalized similarity
-    D, wp = librosa.sequence.dtw(X=chromagram1, Y=chromagram2, subseq=subsequence, metric='euclidean')
+
+    if (len(chromagram1) < len(chromagram2)):
+        D, wp = librosa.sequence.dtw(X=chromagram1, Y=chromagram2, subseq=True, metric='euclidean')
+    else:
+        D, wp = librosa.sequence.dtw(X=chromagram1, Y=chromagram2, metric='euclidean')
 
     s = 0
     min_D = D.min()
@@ -99,10 +103,10 @@ final_maps = []
 for og_file, gen_file in tqdm.tqdm(file_pairs):
     # load test file chromagram
     y, sr = librosa.load(gen_path + gen_file, sr=5000)
-    reduced_noise_audio = nr.reduce_noise(y=y, sr=5000,time_mask_smooth_ms=52)
+    reduced_noise_audio = nr.reduce_noise(y=y, sr=5000, time_mask_smooth_ms=52)
     sf.write('data/cleaned_audio/' + gen_file, reduced_noise_audio, 5000, subtype='PCM_24')
     chromagram1 = fetch_chromagram('data/cleaned_audio/' + gen_file, sr=5000, end_time=30)
-    #chromagram1 = fetch_chromagram(gen_path + gen_file, sr=5000, end_time=30)
+    # chromagram1 = fetch_chromagram(gen_path + gen_file, sr=5000, end_time=30)
     scores = []
     for chroma_file in tqdm.tqdm(chroma_files):
         # fetch each train file chromagram

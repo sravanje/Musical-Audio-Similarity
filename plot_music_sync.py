@@ -24,9 +24,13 @@ def similarity_score(D, wp):
     return similarity
 
 
-def get_dtw(chroma1, chroma2, subsequence=False):
-    D, wp = librosa.sequence.dtw(X=chroma1, Y=chroma2, subseq=subsequence, metric='euclidean')
-    wp_s = librosa.frames_to_time(wp, sr=fs, hop_length=hop_length)
+def get_dtw(chroma1, chroma2):
+    if len(chroma1) < len(chroma2):
+        D, wp = librosa.sequence.dtw(X=chroma1, Y=chroma2, subseq=True, metric='euclidean')
+        wp_s = librosa.frames_to_time(wp, sr=fs, hop_length=hop_length)
+    else:
+        D, wp = librosa.sequence.dtw(X=chroma1, Y=chroma2, metric='euclidean')
+        wp_s = librosa.frames_to_time(wp, sr=fs, hop_length=hop_length)
 
     return D, wp, wp_s
 
