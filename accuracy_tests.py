@@ -3,6 +3,8 @@ import librosa
 import numpy as np
 import tqdm
 import os
+import noisereduce as nr
+import soundfile as sf
 from scipy.spatial.distance import euclidean
 import matplotlib.pyplot as plt
 
@@ -37,9 +39,8 @@ file_pairs = np.array(file_pairs)
 # save chromagrams
 og_files = file_pairs[:, 0]
 for ogf in tqdm.tqdm(og_files):
-    # saving 30 seconds chromagrams of all train files with sampling rate 10k
     # change accordingly
-    chromagram = fetch_chromagram(og_path + ogf, sr=22050, end_time=30)
+    chromagram = fetch_chromagram(og_path + ogf, sr=5000)
     np.save(chroma_path + ogf[:-3] + 'npy', chromagram)
 
 
@@ -52,14 +53,11 @@ def similarity_score(D, wp):
 
     for i in range(len(wp)):
         x, y = wp[i]
-        z = D[x-1, y-1]
+        z = D[x - 1, y - 1]
         s += z
 
     avg_cost = s / len(wp)
     similarity = abs(1 - ((avg_cost - min_D) / (max_D - min_D)))
-
-    #print(avg_cost)
-    #print(similarity)
 
     return similarity
 
@@ -74,9 +72,9 @@ def method1(chromagram1, chromagram2):
     return score
 
 
-def method2(chromagram1, chromagram2):
+def method2(chromagram1, chromagram2, subsequence=False):
     # librosa dtw with normalized similarity
-    D, wp = librosa.sequence.dtw(X=chromagram1, Y=chromagram2, metric='euclidean')
+    D, wp = librosa.sequence.dtw(X=chromagram1, Y=chromagram2, subseq=subsequence, metric='euclidean')
 
     s = 0
     min_D = D.min()
@@ -90,10 +88,8 @@ def method2(chromagram1, chromagram2):
     avg_cost = s / len(wp)
     similarity = abs(1 - ((avg_cost - min_D) / (max_D - min_D)))
 
-    #print(avg_cost)
-    #print(similarity)
-
     return similarity
+
 
 chroma_files = os.listdir(chroma_path)
 
@@ -102,7 +98,11 @@ final_maps = []
 
 for og_file, gen_file in tqdm.tqdm(file_pairs):
     # load test file chromagram
-    chromagram1 = fetch_chromagram(gen_path + gen_file, sr=22050, end_time=30)
+    y, sr = librosa.load(gen_path + gen_file, sr=5000)
+    reduced_noise_audio = nr.reduce_noise(y=y, sr=5000,time_mask_smooth_ms=52)
+    sf.write('data/cleaned_audio/' + gen_file, reduced_noise_audio, 5000, subtype='PCM_24')
+    chromagram1 = fetch_chromagram('data/cleaned_audio/' + gen_file, sr=5000, end_time=30)
+    #chromagram1 = fetch_chromagram(gen_path + gen_file, sr=5000, end_time=30)
     scores = []
     for chroma_file in tqdm.tqdm(chroma_files):
         # fetch each train file chromagram
