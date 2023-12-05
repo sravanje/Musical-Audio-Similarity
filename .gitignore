@@ -11,3 +11,6 @@ spectrogram_analysis.py
 /chromagrams/
 __pycache__/chromagram.cpython-311.pyc
 /data/
+/FMP_C7_Audio_Beethoven_Op067-01_Bernstein.wav
+/FMP_C7_Audio_Beethoven_Op067-01_Bernstein_Theme_2.wav
+__pycache__/calculate_similarity.cpython-311.pyc
